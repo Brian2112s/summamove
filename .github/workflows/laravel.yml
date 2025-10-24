@@ -23,7 +23,6 @@ jobs:
           --health-interval=10s
           --health-timeout=5s
           --health-retries=3
-          --default-authentication-plugin=caching_sha2_password
           --skip-host-cache
           --skip-name-resolve
           --bind-address=0.0.0.0
