@@ -10,6 +10,7 @@ RUN apt-get update && apt-get install -y \
     unzip \
     git \
     curl \
+    nginx \
     && docker-php-ext-install pdo_mysql mbstring exif pcntl bcmath gd
 
 # Composer installeren
@@ -27,11 +28,15 @@ RUN composer install --no-dev --optimize-autoloader
 # Storage & cache rechten
 RUN chown -R www-data:www-data /var/www/storage /var/www/bootstrap/cache
 
+# Nginx configuratie
+RUN rm /etc/nginx/sites-enabled/default
+COPY nginx.conf /etc/nginx/sites-enabled/default
+
+# Label
 LABEL org.opencontainers.image.source="https://github.com/brian2112s/summamove"
 
+# Expose HTTP port
+EXPOSE 80
 
-# Expose port
-EXPOSE 9000
-
-# Start PHP-FPM
-CMD ["php-fpm"]
+# Start PHP-FPM en Nginx
+CMD ["sh", "-c", "php-fpm -D && nginx -g 'daemon off;'"]
