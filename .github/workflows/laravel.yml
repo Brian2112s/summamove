@@ -106,11 +106,14 @@ jobs:
           until mysqladmin ping -h127.0.0.1 -uroot -p${{ secrets.DB_PASSWORD }} --silent 2>/dev/null; do
             sleep 3
           done
-          
           echo "✅ MySQL is ready!"
-
         env:
           MYSQL_PWD: ${{ secrets.DB_PASSWORD }}
+
+      - name: PHP Lint
+        run: |
+          echo "🔍 Running PHP syntax check..."
+          find . -type f -name "*.php" -not -path "./vendor/*" -exec php -l {} \;
 
       - name: Run migrations
         run: php artisan migrate --force
