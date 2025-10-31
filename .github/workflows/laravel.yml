@@ -95,18 +95,20 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GHCR_PAT }}
 
-      - name: Build Docker image
-        run: |
-          IMAGE=ghcr.io/brian2112s/summamove_project4:${{ github.sha }}
-          docker build -t $IMAGE .
-          echo "Built $IMAGE"
-          # Tag ook als 'latest'
-          docker tag $IMAGE ghcr.io/brian2112s/summamove_project4:latest
+      - name: 🐳 Build Docker image
+        run: docker build -t laravel-app .
       
-      - name: Push Docker image
+      - name: 🔑 Log in to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GHCR_PAT }}
+      
+      - name: 📤 Push Docker image to GHCR
         run: |
-          IMAGE=ghcr.io/brian2112s/summamove_project4:${{ github.sha }}
-          docker push $IMAGE
-          docker push ghcr.io/brian2112s/summamove_project4:latest
+          IMAGE_NAME=ghcr.io/brian2112s/summamove_project4
+          docker tag laravel-app $IMAGE_NAME:latest
+          docker push $IMAGE_NAME:latest
       
             
