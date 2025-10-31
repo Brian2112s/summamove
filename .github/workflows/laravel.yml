@@ -107,7 +107,7 @@ jobs:
       
       - name: 📤 Push Docker image to GHCR
         run: |
-          IMAGE_NAME=ghcr.io/brian2112s/summamove/summamove-backend
+          IMAGE_NAME=ghcr.io/brian2112s/summamove
           
           # Tag latest
           docker tag laravel-app $IMAGE_NAME:latest
