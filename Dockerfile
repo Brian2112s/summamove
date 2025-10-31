@@ -27,7 +27,7 @@ RUN composer install --no-dev --optimize-autoloader
 # Storage & cache rechten
 RUN chown -R www-data:www-data /var/www/storage /var/www/bootstrap/cache
 
-LABEL org.opencontainers.image.source="https://github.com/brian2112s/summamove_project4"
+LABEL org.opencontainers.image.source="https://github.com/brian2112s/summamove"
 
 
 # Expose port
