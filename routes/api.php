@@ -10,6 +10,10 @@ Route::get('/user', function (Request $request) {
     return $request->user();
 })->middleware('auth:sanctum');
 
+Route::get('/healthz', function() {
+    return response('OK', 200);
+});
+
 Route::post('/register', [AuthenticationController::class, 'register']);
 
 Route::post('/login', [AuthenticationController::class, 'login']);
