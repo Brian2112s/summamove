@@ -10,25 +10,26 @@ use Illuminate\Support\Facades\Auth;
 
 class ExerciseController extends Controller
 {
-    public function index(Request $request)
-    {
-        $lang = $request->query('lang', 'nl');
+        public function index(Request $request)
+        {
+            $lang = $request->query('lang', 'nl');
 
-        try {
-            $exercises = Exercise::all()->map(function ($exercise) use ($lang) {
-                $exercise->description = $lang === 'en' ? $exercise->vertaling_en : $exercise->description;
+            try {
+                $exercises = Exercise::all()->map(function ($exercise) use ($lang) {
+                    $exercise->description = $lang === 'en' ? $exercise->vertaling_en : $exercise->description;
 
-                $exercise->image = asset($exercise->image);
+                    $exercise->image = url('images/' . basename($exercise->image));
 
-                return $exercise;
-            });
+                    return $exercise;
+                });
 
-            return response()->json($exercises);
-        } catch (\Exception $e) {
-            Log::error("Error fetching exercises: " . $e->getMessage());
-            return response()->json(['error' => 'Failed to fetch exercises'], 500);
+                return response()->json($exercises);
+            } catch (\Exception $e) {
+                Log::error("Error fetching exercises: " . $e->getMessage());
+                return response()->json(['error' => 'Failed to fetch exercises'], 500);
+            }
         }
-    }
+
 
     public function createExercise(Request $request)
     {
