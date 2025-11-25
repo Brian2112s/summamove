@@ -52,6 +52,12 @@ class User extends Authenticatable
     /**
      * The exercises that belong to the user.
      */
+    
+    public function exercises()
+    {
+        return $this->belongsToMany(Exercise::class, 'user_exercises', 'user_id', 'exercise_id');
+    }
+
     public function achievements()
     {
         return $this->hasMany(Achievement::class);
