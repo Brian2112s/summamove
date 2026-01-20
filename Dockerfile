@@ -32,14 +32,6 @@ RUN chown -R www-data:www-data /var/www/storage /var/www/bootstrap/cache
 RUN rm /etc/nginx/sites-enabled/default
 COPY nginx.conf /etc/nginx/sites-enabled/default
 
-# Kopieer .env
-COPY .env /var/www/.env
-
-# Kopieer CA-certificaat
-COPY ca.pem /var/www/ca.pem
-
-RUN chown www-data:www-data /var/www/ca.pem
-
 # Label
 LABEL org.opencontainers.image.source="https://github.com/brian2112s/summamove"
 
