@@ -18,7 +18,7 @@ class ExerciseController extends Controller
                 $exercises = Exercise::all()->map(function ($exercise) use ($lang) {
                     $exercise->description = $lang === 'en' ? $exercise->vertaling_en : $exercise->description;
 
-                    $exercise->image = url('images/' . basename($exercise->image));
+                    $exercise->image;
 
                     return $exercise;
                 });
