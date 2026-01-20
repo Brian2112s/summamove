@@ -24,83 +24,83 @@ jobs:
           --health-timeout=5s
           --health-retries=3
 
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Setup PHP
-        uses: shivammathur/setup-php@v2
-        with:
-          php-version: '8.2'
-          extensions: mbstring, bcmath, pdo_mysql
-          coverage: none
-
-      - name: Create .env file
-        run: |
-          cat <<EOF > .env
-          APP_NAME=Laravel
-          APP_ENV=local
-          APP_KEY=${{ secrets.APP_KEY }}
-          APP_DEBUG=true
-          APP_URL=http://localhost/
-          DB_CONNECTION=mysql
-          DB_HOST=127.0.0.1
-          DB_PORT=3306
-          DB_DATABASE=summamove
-          DB_USERNAME=root
-          DB_PASSWORD=${{ secrets.DB_PASSWORD }}
-          EOF
-
-      - name: Install Composer dependencies
-        run: composer install --no-progress --prefer-dist --no-interaction
-
-      - name: Generate Laravel key
-        run: php artisan key:generate --ansi
-
-      - name: Set directory permissions
-        run: chmod -R 777 storage bootstrap/cache
-
-      - name: Wait for MySQL to be ready
-        run: |
-          echo "⏳ Waiting for MySQL to start..."
-          until mysqladmin ping -h127.0.0.1 -uroot -p${{ secrets.DB_PASSWORD }} --silent 2>/dev/null; do
-            sleep 3
-          done
-          echo "✅ MySQL is ready!"
-        env:
-          MYSQL_PWD: ${{ secrets.DB_PASSWORD }}
-
-      - name: PHP Lint
-        run: |
-          echo "🔍 Running PHP syntax check..."
-          find . -type f -name "*.php" -not -path "./vendor/*" -exec php -l {} \;
-
-      - name: Run migrations
-        run: php artisan migrate --force
-
-      - name: Run tests
-        run: php artisan test
-
-      laravel-deploy:
-      runs-on: ubuntu-latest
-      needs: laravel-tests
       steps:
         - name: Checkout code
           uses: actions/checkout@v4
-    
-        - name: Log in to GHCR
-          uses: docker/login-action@v3
+  
+        - name: Setup PHP
+          uses: shivammathur/setup-php@v2
           with:
-            registry: ghcr.io
-            username: ${{ github.actor }}
-            password: ${{ secrets.GHCR_PAT }}
-    
-        - name: Build & Push Docker image
+            php-version: '8.2'
+            extensions: mbstring, bcmath, pdo_mysql
+            coverage: none
+  
+        - name: Create .env file
           run: |
-            IMAGE_NAME=ghcr.io/brian2112s/summamove/laravel-backend
-            
-            docker build -t $IMAGE_NAME .
-            
-            docker push $IMAGE_NAME:latest
-            docker tag $IMAGE_NAME:latest $IMAGE_NAME:${{ github.sha }}
-            docker push $IMAGE_NAME:${{ github.sha }}
+            cat <<EOF > .env
+            APP_NAME=Laravel
+            APP_ENV=local
+            APP_KEY=${{ secrets.APP_KEY }}
+            APP_DEBUG=true
+            APP_URL=http://localhost/
+            DB_CONNECTION=mysql
+            DB_HOST=127.0.0.1
+            DB_PORT=3306
+            DB_DATABASE=summamove
+            DB_USERNAME=root
+            DB_PASSWORD=${{ secrets.DB_PASSWORD }}
+            EOF
+  
+        - name: Install Composer dependencies
+          run: composer install --no-progress --prefer-dist --no-interaction
+  
+        - name: Generate Laravel key
+          run: php artisan key:generate --ansi
+  
+        - name: Set directory permissions
+          run: chmod -R 777 storage bootstrap/cache
+  
+        - name: Wait for MySQL to be ready
+          run: |
+            echo "⏳ Waiting for MySQL to start..."
+            until mysqladmin ping -h127.0.0.1 -uroot -p${{ secrets.DB_PASSWORD }} --silent 2>/dev/null; do
+              sleep 3
+            done
+            echo "✅ MySQL is ready!"
+          env:
+            MYSQL_PWD: ${{ secrets.DB_PASSWORD }}
+  
+        - name: PHP Lint
+          run: |
+            echo "🔍 Running PHP syntax check..."
+            find . -type f -name "*.php" -not -path "./vendor/*" -exec php -l {} \;
+  
+        - name: Run migrations
+          run: php artisan migrate --force
+  
+        - name: Run tests
+          run: php artisan test
+
+        laravel-deploy:
+        runs-on: ubuntu-latest
+        needs: laravel-tests
+        steps:
+          - name: Checkout code
+            uses: actions/checkout@v4
+      
+          - name: Log in to GHCR
+            uses: docker/login-action@v3
+            with:
+              registry: ghcr.io
+              username: ${{ github.actor }}
+              password: ${{ secrets.GHCR_PAT }}
+      
+          - name: Build & Push Docker image
+            run: |
+              IMAGE_NAME=ghcr.io/brian2112s/summamove/laravel-backend
+              
+              docker build -t $IMAGE_NAME .
+              
+              docker push $IMAGE_NAME:latest
+              docker tag $IMAGE_NAME:latest $IMAGE_NAME:${{ github.sha }}
+              docker push $IMAGE_NAME:${{ github.sha }}
